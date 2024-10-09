@@ -10,15 +10,15 @@ import (
 
 const (
 	host     = "localhost"
-	port     = 3307
+	port     = 3306
 	user     = "root"
-	password = ""
+	password = "1234"
 	dbname   = "go_rest_api"
 )
 
 func ConnectDb() (*sql.DB, error) {
-	// Define a string de conexão
-	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s", user, password, host, dbname)
+	// Define a string de conexão, incluindo a porta
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", user, password, host, port, dbname)
 
 	// Abre a conexão com o banco de dados
 	db, err := sql.Open("mysql", dsn)
