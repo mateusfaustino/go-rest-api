@@ -1,31 +1,27 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
+	"log"
+
 	"github.com/mateusfaustino/go-rest-api/controller"
 	"github.com/mateusfaustino/go-rest-api/db"
-	usecase "github.com/mateusfaustino/go-rest-api/useCase"
+	"github.com/mateusfaustino/go-rest-api/repository"
+	"github.com/mateusfaustino/go-rest-api/routes"
+	"github.com/mateusfaustino/go-rest-api/usecase"
 )
 
 func main() {
-	server := gin.Default()
 
-	_, err := db.ConnectDb()
-
-	if err!= nil {
-		panic(err)
+	connection, err := db.ConnectDb()
+	if err != nil {
+		log.Fatal("Erro ao conectar ao banco de dados: ", err)
 	}
 
-	productUseCase := usecase.NewProductUseCase()
+	ProductRepository := repository.NewProductRepository(connection)
+	productUseCase := usecase.NewProductUseCase(ProductRepository)
 	productController := controller.NewProductController(productUseCase)
-	server.GET("/", func (ctx *gin.Context){
-		ctx.JSON(200, gin.H{
-			"message": "pong",
-		})
 
-	})
-
-	server.GET("product", productController.GetProducts)
-
+	// Configurar rotas e iniciar o servidor
+	server := routes.SetupRouter(productController)
 	server.Run(":8000")
 }
